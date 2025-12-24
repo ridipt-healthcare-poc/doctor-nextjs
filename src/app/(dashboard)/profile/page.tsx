@@ -77,9 +77,9 @@ export default function ProfilePage() {
             if (user.operatingHours) {
                 const schedule = daysOfWeek.map(day => ({
                     dayOfWeek: day,
-                    open: user.operatingHours[day]?.open || '09:00',
-                    close: user.operatingHours[day]?.close || '17:00',
-                    slotDuration: user.operatingHours[day]?.slotDuration || '30',
+                    open: user.operatingHours?.[day]?.open || '09:00',
+                    close: user.operatingHours?.[day]?.close || '17:00',
+                    slotDuration: user.operatingHours?.[day]?.slotDuration || '30',
                 }));
                 setAvailabilitySchedule(schedule);
             } else {
