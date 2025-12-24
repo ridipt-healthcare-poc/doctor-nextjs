@@ -1,22 +1,19 @@
 'use client'
 
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
-import Link from "next/link";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Center, Spinner } from '@chakra-ui/react';
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/login');
+  }, [router]);
+
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.50">
-      <VStack spacing={6} textAlign="center">
-        <Heading size="xl" color="blue.600">
-          Doctor Appointment Management
-        </Heading>
-        <Text fontSize="lg" color="gray.600">
-          Welcome to the doctor appointment booking system.
-        </Text>
-        <Button as={Link} href="/login" colorScheme="blue" size="lg">
-          Go to Login
-        </Button>
-      </VStack>
-    </Box>
+    <Center minH="100vh" bg="gray.50">
+      <Spinner size="xl" color="blue.500" />
+    </Center>
   );
 }
