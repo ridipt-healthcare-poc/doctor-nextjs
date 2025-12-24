@@ -186,8 +186,9 @@ export default function AppointmentsPage() {
                 </TabList>
 
                 <TabPanels>
+                    {/* All Appointments Tab */}
                     <TabPanel>
-                        {filteredAppointments.length === 0 ? (
+                        {filterAppointments(appointments, 0).length === 0 ? (
                             <Box
                                 bg={cardBg}
                                 p={8}
@@ -195,10 +196,7 @@ export default function AppointmentsPage() {
                                 textAlign="center"
                             >
                                 <Text color="gray.500">
-                                    {activeTab === 0
-                                        ? 'No appointments found. Create your first appointment!'
-                                        : `No ${['all', 'scheduled', 'completed', 'cancelled'][activeTab]} appointments found.`
-                                    }
+                                    No appointments found. Create your first appointment!
                                 </Text>
                             </Box>
                         ) : (
@@ -215,7 +213,7 @@ export default function AppointmentsPage() {
                                         </Tr>
                                     </Thead>
                                     <Tbody>
-                                        {filteredAppointments.map((appointment: any) => (
+                                        {filterAppointments(appointments, 0).map((appointment: any) => (
                                             <Tr key={appointment._id}>
                                                 <Td fontWeight="medium">
                                                     {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
@@ -271,6 +269,276 @@ export default function AppointmentsPage() {
                                                                     Mark as Completed
                                                                 </MenuItem>
                                                             )}
+                                                            <MenuItem
+                                                                icon={<FiTrash2 />}
+                                                                color="red.500"
+                                                                onClick={() => {
+                                                                    setDeleteAppointmentId(appointment._id);
+                                                                    onOpen();
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            </Box>
+                        )}
+                    </TabPanel>
+
+                    {/* Scheduled Appointments Tab */}
+                    <TabPanel>
+                        {filterAppointments(appointments, 1).length === 0 ? (
+                            <Box
+                                bg={cardBg}
+                                p={8}
+                                borderRadius="xl"
+                                textAlign="center"
+                            >
+                                <Text color="gray.500">
+                                    No scheduled appointments found.
+                                </Text>
+                            </Box>
+                        ) : (
+                            <Box bg={cardBg} borderRadius="xl" overflow="hidden">
+                                <Table variant="simple">
+                                    <Thead bg={theadBg}>
+                                        <Tr>
+                                            <Th>Patient</Th>
+                                            <Th>Date</Th>
+                                            <Th>Time</Th>
+                                            <Th>Status</Th>
+                                            <Th>Reason</Th>
+                                            <Th>Actions</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {filterAppointments(appointments, 1).map((appointment: any) => (
+                                            <Tr key={appointment._id}>
+                                                <Td fontWeight="medium">
+                                                    {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
+                                                </Td>
+                                                <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
+                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>
+                                                    <Badge colorScheme={getStatusColor(appointment.status)}>
+                                                        {appointment.status}
+                                                    </Badge>
+                                                </Td>
+                                                <Td>{appointment.reason || '-'}</Td>
+                                                <Td>
+                                                    <Menu>
+                                                        <MenuButton
+                                                            as={IconButton}
+                                                            aria-label="Options"
+                                                            icon={<FiMoreVertical />}
+                                                            variant="ghost"
+                                                            size="sm"
+                                                        />
+                                                        <MenuList>
+                                                            <MenuItem
+                                                                icon={<FiEye />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}`)}
+                                                            >
+                                                                View Details
+                                                            </MenuItem>
+                                                            <MenuItem
+                                                                icon={<FiEdit />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}/edit`)}
+                                                            >
+                                                                Update
+                                                            </MenuItem>
+                                                            {appointment.status === 'Scheduled' && (
+                                                                <>
+                                                                    <MenuItem
+                                                                        onClick={() => handleUpdateStatus(appointment._id, 'Confirmed')}
+                                                                    >
+                                                                        Mark as Confirmed
+                                                                    </MenuItem>
+                                                                    <MenuItem
+                                                                        onClick={() => handleUpdateStatus(appointment._id, 'Completed')}
+                                                                    >
+                                                                        Mark as Completed
+                                                                    </MenuItem>
+                                                                </>
+                                                            )}
+                                                            {appointment.status === 'Confirmed' && (
+                                                                <MenuItem
+                                                                    onClick={() => handleUpdateStatus(appointment._id, 'Completed')}
+                                                                >
+                                                                    Mark as Completed
+                                                                </MenuItem>
+                                                            )}
+                                                            <MenuItem
+                                                                icon={<FiTrash2 />}
+                                                                color="red.500"
+                                                                onClick={() => {
+                                                                    setDeleteAppointmentId(appointment._id);
+                                                                    onOpen();
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            </Box>
+                        )}
+                    </TabPanel>
+
+                    {/* Completed Appointments Tab */}
+                    <TabPanel>
+                        {filterAppointments(appointments, 2).length === 0 ? (
+                            <Box
+                                bg={cardBg}
+                                p={8}
+                                borderRadius="xl"
+                                textAlign="center"
+                            >
+                                <Text color="gray.500">
+                                    No completed appointments found.
+                                </Text>
+                            </Box>
+                        ) : (
+                            <Box bg={cardBg} borderRadius="xl" overflow="hidden">
+                                <Table variant="simple">
+                                    <Thead bg={theadBg}>
+                                        <Tr>
+                                            <Th>Patient</Th>
+                                            <Th>Date</Th>
+                                            <Th>Time</Th>
+                                            <Th>Status</Th>
+                                            <Th>Reason</Th>
+                                            <Th>Actions</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {filterAppointments(appointments, 2).map((appointment: any) => (
+                                            <Tr key={appointment._id}>
+                                                <Td fontWeight="medium">
+                                                    {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
+                                                </Td>
+                                                <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
+                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>
+                                                    <Badge colorScheme={getStatusColor(appointment.status)}>
+                                                        {appointment.status}
+                                                    </Badge>
+                                                </Td>
+                                                <Td>{appointment.reason || '-'}</Td>
+                                                <Td>
+                                                    <Menu>
+                                                        <MenuButton
+                                                            as={IconButton}
+                                                            aria-label="Options"
+                                                            icon={<FiMoreVertical />}
+                                                            variant="ghost"
+                                                            size="sm"
+                                                        />
+                                                        <MenuList>
+                                                            <MenuItem
+                                                                icon={<FiEye />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}`)}
+                                                            >
+                                                                View Details
+                                                            </MenuItem>
+                                                            <MenuItem
+                                                                icon={<FiEdit />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}/edit`)}
+                                                            >
+                                                                Update
+                                                            </MenuItem>
+                                                            <MenuItem
+                                                                icon={<FiTrash2 />}
+                                                                color="red.500"
+                                                                onClick={() => {
+                                                                    setDeleteAppointmentId(appointment._id);
+                                                                    onOpen();
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            </Box>
+                        )}
+                    </TabPanel>
+
+                    {/* Cancelled Appointments Tab */}
+                    <TabPanel>
+                        {filterAppointments(appointments, 3).length === 0 ? (
+                            <Box
+                                bg={cardBg}
+                                p={8}
+                                borderRadius="xl"
+                                textAlign="center"
+                            >
+                                <Text color="gray.500">
+                                    No cancelled appointments found.
+                                </Text>
+                            </Box>
+                        ) : (
+                            <Box bg={cardBg} borderRadius="xl" overflow="hidden">
+                                <Table variant="simple">
+                                    <Thead bg={theadBg}>
+                                        <Tr>
+                                            <Th>Patient</Th>
+                                            <Th>Date</Th>
+                                            <Th>Time</Th>
+                                            <Th>Status</Th>
+                                            <Th>Reason</Th>
+                                            <Th>Actions</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {filterAppointments(appointments, 3).map((appointment: any) => (
+                                            <Tr key={appointment._id}>
+                                                <Td fontWeight="medium">
+                                                    {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
+                                                </Td>
+                                                <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
+                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>
+                                                    <Badge colorScheme={getStatusColor(appointment.status)}>
+                                                        {appointment.status}
+                                                    </Badge>
+                                                </Td>
+                                                <Td>{appointment.reason || '-'}</Td>
+                                                <Td>
+                                                    <Menu>
+                                                        <MenuButton
+                                                            as={IconButton}
+                                                            aria-label="Options"
+                                                            icon={<FiMoreVertical />}
+                                                            variant="ghost"
+                                                            size="sm"
+                                                        />
+                                                        <MenuList>
+                                                            <MenuItem
+                                                                icon={<FiEye />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}`)}
+                                                            >
+                                                                View Details
+                                                            </MenuItem>
+                                                            <MenuItem
+                                                                icon={<FiEdit />}
+                                                                onClick={() => router.push(`/appointments/${appointment._id}/edit`)}
+                                                            >
+                                                                Update
+                                                            </MenuItem>
                                                             <MenuItem
                                                                 icon={<FiTrash2 />}
                                                                 color="red.500"
