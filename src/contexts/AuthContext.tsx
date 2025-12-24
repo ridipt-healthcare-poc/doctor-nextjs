@@ -13,6 +13,17 @@ interface User {
     dateOfBirth?: string;
     facilityId?: any;
     locationId?: any;
+    // Doctor-specific properties
+    specialization?: string;
+    department?: string;
+    durationMinutes?: number;
+    operatingHours?: {
+        [day: string]: {
+            open: string;
+            close: string;
+            slotDuration: string;
+        };
+    };
 }
 
 interface SignupData {
