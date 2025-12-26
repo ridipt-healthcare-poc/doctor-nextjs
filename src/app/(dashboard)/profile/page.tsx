@@ -51,6 +51,10 @@ export default function ProfilePage() {
         specialization: '',
         department: '',
         durationMinutes: 30,
+        onsiteFee: '',
+        voiceCallFee: '',
+        videoCallFee: '',
+        homeVisitFee: '',
     });
     const [availabilitySchedule, setAvailabilitySchedule] = useState<DaySchedule[]>([]);
     const [saving, setSaving] = useState(false);
@@ -71,6 +75,10 @@ export default function ProfilePage() {
                 specialization: user.specialization || '',
                 department: user.department || '',
                 durationMinutes: user.durationMinutes || 30,
+                onsiteFee: user.consultationFees?.onsite ? String(user.consultationFees.onsite) : '',
+                voiceCallFee: user.consultationFees?.voiceCall ? String(user.consultationFees.voiceCall) : '',
+                videoCallFee: user.consultationFees?.videoCall ? String(user.consultationFees.videoCall) : '',
+                homeVisitFee: user.consultationFees?.homeVisit ? String(user.consultationFees.homeVisit) : '',
             });
 
             // Initialize operating hours
@@ -122,10 +130,29 @@ export default function ProfilePage() {
                 };
             });
 
-            const profileData = {
-                ...formData,
+            const profileData: any = {
                 operatingHours,
             };
+
+            // Only include non-empty basic fields
+            if (formData.name) profileData.name = formData.name;
+            if (formData.email) profileData.email = formData.email;
+            if (formData.mobile) profileData.mobile = formData.mobile;
+            if (formData.phone) profileData.phone = formData.phone;
+            if (formData.specialization) profileData.specialization = formData.specialization;
+            if (formData.department) profileData.department = formData.department;
+            if (formData.durationMinutes) profileData.durationMinutes = formData.durationMinutes;
+
+            // Add consultation fees if any are provided
+            if (formData.onsiteFee || formData.voiceCallFee || formData.videoCallFee || formData.homeVisitFee) {
+                profileData.consultationFees = {
+                    onsite: formData.onsiteFee ? parseFloat(formData.onsiteFee) : undefined,
+                    voiceCall: formData.voiceCallFee ? parseFloat(formData.voiceCallFee) : undefined,
+                    videoCall: formData.videoCallFee ? parseFloat(formData.videoCallFee) : undefined,
+                    homeVisit: formData.homeVisitFee ? parseFloat(formData.homeVisitFee) : undefined,
+                };
+            }
+
             await updateProfile(profileData);
             toast({
                 title: 'Profile updated successfully',
@@ -165,6 +192,7 @@ export default function ProfilePage() {
                     <TabList>
                         <Tab>Basic Information</Tab>
                         <Tab>Availability & Slots</Tab>
+                        <Tab>Consultation Fees</Tab>
                     </TabList>
 
                     <TabPanels>
@@ -265,6 +293,10 @@ export default function ProfilePage() {
                                                     specialization: user.specialization || '',
                                                     department: user.department || '',
                                                     durationMinutes: user.durationMinutes || 30,
+                                                    onsiteFee: user.consultationFees?.onsite ? String(user.consultationFees.onsite) : '',
+                                                    voiceCallFee: user.consultationFees?.voiceCall ? String(user.consultationFees.voiceCall) : '',
+                                                    videoCallFee: user.consultationFees?.videoCall ? String(user.consultationFees.videoCall) : '',
+                                                    homeVisitFee: user.consultationFees?.homeVisit ? String(user.consultationFees.homeVisit) : '',
                                                 });
                                             }
                                         }}>
@@ -333,6 +365,89 @@ export default function ProfilePage() {
                                         loadingText="Saving..."
                                     >
                                         Save Availability
+                                    </Button>
+                                </HStack>
+                            </VStack>
+                        </TabPanel>
+
+                        <TabPanel>
+                            <VStack spacing={6} align="stretch">
+                                <Text fontSize="sm" color="gray.600">
+                                    Set your consultation fees for different appointment types. These fees will be used when creating appointments.
+                                </Text>
+
+                                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                                    <GridItem>
+                                        <FormControl>
+                                            <FormLabel>Onsite Consultation Fee (₹)</FormLabel>
+                                            <Input
+                                                name="onsiteFee"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={formData.onsiteFee}
+                                                onChange={handleChange}
+                                                placeholder="500"
+                                            />
+                                        </FormControl>
+                                    </GridItem>
+
+                                    <GridItem>
+                                        <FormControl>
+                                            <FormLabel>Voice Call Consultation Fee (₹)</FormLabel>
+                                            <Input
+                                                name="voiceCallFee"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={formData.voiceCallFee}
+                                                onChange={handleChange}
+                                                placeholder="300"
+                                            />
+                                        </FormControl>
+                                    </GridItem>
+
+                                    <GridItem>
+                                        <FormControl>
+                                            <FormLabel>Video Call Consultation Fee (₹)</FormLabel>
+                                            <Input
+                                                name="videoCallFee"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={formData.videoCallFee}
+                                                onChange={handleChange}
+                                                placeholder="400"
+                                            />
+                                        </FormControl>
+                                    </GridItem>
+
+                                    <GridItem>
+                                        <FormControl>
+                                            <FormLabel>Home Visit Consultation Fee (₹)</FormLabel>
+                                            <Input
+                                                name="homeVisitFee"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={formData.homeVisitFee}
+                                                onChange={handleChange}
+                                                placeholder="1000"
+                                            />
+                                        </FormControl>
+                                    </GridItem>
+                                </Grid>
+
+                                <Divider />
+
+                                <HStack spacing={4} justify="end">
+                                    <Button
+                                        colorScheme="blue"
+                                        onClick={handleSubmit}
+                                        isLoading={saving}
+                                        loadingText="Saving..."
+                                    >
+                                        Save Consultation Fees
                                     </Button>
                                 </HStack>
                             </VStack>

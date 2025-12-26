@@ -152,6 +152,7 @@ export default function PatientsPage() {
                         <Thead bg={theadBg}>
                             <Tr>
                                 <Th>Name</Th>
+                                <Th>MRN</Th>
                                 <Th>Phone</Th>
                                 <Th>Email</Th>
                                 <Th>Gender</Th>
@@ -164,6 +165,16 @@ export default function PatientsPage() {
                                 <Tr key={patient._id}>
                                     <Td fontWeight="medium">
                                         {patient.fullName}
+                                        {patient.facilitiesCount && patient.facilitiesCount > 1 && (
+                                            <Badge ml={2} colorScheme="blue" fontSize="xs">
+                                                {patient.facilitiesCount} facilities
+                                            </Badge>
+                                        )}
+                                    </Td>
+                                    <Td>
+                                        <Text fontSize="sm" fontWeight="medium" color="purple.600">
+                                            {patient.currentFacility?.mrn || '-'}
+                                        </Text>
                                     </Td>
                                     <Td>{patient.mobile}</Td>
                                     <Td>{patient.email || '-'}</Td>

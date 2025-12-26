@@ -57,6 +57,8 @@ export default function EditAppointmentPage() {
     const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
+    const [hasSelectedNewSlot, setHasSelectedNewSlot] = useState(false); // Track if user selected a new slot
+    const [originalSlot, setOriginalSlot] = useState<any>(null); // Store original slot
 
     const [formData, setFormData] = useState({
         patientId: '',
@@ -101,6 +103,9 @@ export default function EditAppointmentPage() {
                 notes: appointment.notes || '',
                 status: appointment.status || 'Scheduled',
             });
+
+            // Store original slot for comparison
+            setOriginalSlot(appointment.slot);
 
             // Set the selected slot if available
             if (appointment.slot?.start) {
@@ -160,6 +165,7 @@ export default function EditAppointmentPage() {
         });
 
         setSelectedSlot(slot);
+        setHasSelectedNewSlot(true); // Mark that user selected a new slot
         setFormData((prev) => ({
             ...prev,
             appointmentTime: time,
@@ -182,6 +188,7 @@ export default function EditAppointmentPage() {
             fetchAvailableSlots(value);
             // Reset selected slot when date changes
             setSelectedSlot(null);
+            setHasSelectedNewSlot(false);
             setFormData(prev => ({ ...prev, appointmentTime: '', slot: { start: '', end: '' } }));
         }
     };
@@ -189,29 +196,37 @@ export default function EditAppointmentPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.patientId || !formData.appointmentDate || !selectedSlot) {
+        if (!formData.patientId || !formData.appointmentDate) {
             toast.error('Please fill all required fields');
             return;
         }
 
         setLoading(true);
         try {
-            const appointmentData = {
-                patientId: formData.patientId,
-                appointmentDate: formData.appointmentDate,
-                appointmentDateTime: new Date(selectedSlot.start).toISOString(),
-                appointmentTime: formData.appointmentTime,
-                slot: {
-                    start: selectedSlot.start,
-                    end: selectedSlot.end,
-                },
+            const appointmentData: any = {
+                status: formData.status,
                 appointmentType: formData.appointmentType,
                 visitType: formData.visitType,
                 consultationFee: formData.consultationFee,
-                reason: formData.reason,
+                reasonForVisit: formData.reason,
                 notes: formData.notes,
-                status: formData.status,
             };
+
+            // Only include slot if user selected a new slot
+            if (hasSelectedNewSlot && selectedSlot) {
+                // Generate a valid ObjectId-like string (24 hex characters)
+                const timestamp = Math.floor(Date.now() / 1000).toString(16).padStart(8, '0');
+                const randomHex = Math.random().toString(16).substring(2, 18).padEnd(16, '0');
+                const slotId = timestamp + randomHex;
+
+                appointmentData.slot = {
+                    slotId: slotId,
+                    start: selectedSlot.start,
+                    end: selectedSlot.end,
+                };
+                appointmentData.appointmentDate = formData.appointmentDate;
+                appointmentData.appointmentDateTime = new Date(selectedSlot.start).toISOString();
+            }
 
             await appointmentService.updateAppointment(appointmentId, appointmentData);
             toast.success('Appointment updated successfully');

@@ -11,6 +11,16 @@ export interface Patient {
     medicalHistory?: string;
     allergies?: string[];
     isActive: boolean;
+    // Multi-facility fields
+    currentFacility?: {
+        facilityId: string;
+        facilityType: string;
+        mrn: string;
+        registeredAt: string;
+        status: string;
+        notes?: string;
+    };
+    facilitiesCount?: number;
 }
 
 export interface PatientStats {

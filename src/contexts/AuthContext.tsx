@@ -24,6 +24,12 @@ interface User {
             slotDuration: string;
         };
     };
+    consultationFees?: {
+        onsite?: number;
+        voiceCall?: number;
+        videoCall?: number;
+        homeVisit?: number;
+    };
 }
 
 interface SignupData {

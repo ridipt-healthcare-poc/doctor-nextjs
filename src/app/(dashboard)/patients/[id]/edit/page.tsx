@@ -112,7 +112,7 @@ export default function EditPatientPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.fullName || !formData.email || !formData.mobile) {
+        if (!formData.fullName || !formData.mobile) {
             toast.error('Please fill all required fields');
             return;
         }
@@ -245,7 +245,7 @@ export default function EditPatientPage() {
                                     <HStack spacing={4} width="full">
                                         <Box flex="1">
                                             <FormLabel htmlFor="email" className="text-gray-700 font-medium">
-                                                Email <span className="text-red-500">*</span>
+                                                Email
                                             </FormLabel>
                                             <Input
                                                 id="email"
@@ -254,7 +254,6 @@ export default function EditPatientPage() {
                                                 placeholder="patient@example.com"
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                required
                                                 bg={inputBg}
                                                 border="1px solid"
                                                 borderColor="gray.300"
