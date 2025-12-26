@@ -241,7 +241,7 @@ export default function AppointmentDetailPage() {
                                         <FiClock color="gray" />
                                         <Text fontWeight="semibold" color={labelColor}>Time</Text>
                                     </HStack>
-                                    <Text fontSize="lg">{appointment.appointmentTime}</Text>
+                                    <Text fontSize="lg">{new Date(appointment.appointmentDateTime || appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                                 </Box>
 
                                 {appointment.reason && (

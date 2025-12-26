@@ -537,7 +537,7 @@ export default function DashboardPage() {
                         {appt.patientId?.fullName || "Patient"}
                       </Text>
                       <Text fontSize="sm" color="blue.500">
-                        {appt.appointmentTime}
+                        {new Date(appt.appointmentDateTime || appt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Text>
                       <Text fontSize="xs" color="blue.500" mt={1}>
                         {appt.reason || "General check-up"}
@@ -594,8 +594,8 @@ export default function DashboardPage() {
                       reminder.urgency === "high"
                         ? "red"
                         : reminder.urgency === "medium"
-                        ? "orange"
-                        : "blue"
+                          ? "orange"
+                          : "blue"
                     }
                   >
                     {reminder.due}

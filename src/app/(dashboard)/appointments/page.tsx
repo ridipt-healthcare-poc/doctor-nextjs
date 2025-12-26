@@ -219,7 +219,7 @@ export default function AppointmentsPage() {
                                                     {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
                                                 </Td>
                                                 <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
-                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>{new Date(appointment.appointmentDateTime || appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Td>
                                                 <Td>
                                                     <Badge colorScheme={getStatusColor(appointment.status)}>
                                                         {appointment.status}
@@ -323,7 +323,7 @@ export default function AppointmentsPage() {
                                                     {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
                                                 </Td>
                                                 <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
-                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>{new Date(appointment.appointmentDateTime || appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Td>
                                                 <Td>
                                                     <Badge colorScheme={getStatusColor(appointment.status)}>
                                                         {appointment.status}
@@ -427,7 +427,7 @@ export default function AppointmentsPage() {
                                                     {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
                                                 </Td>
                                                 <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
-                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>{new Date(appointment.appointmentDateTime || appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Td>
                                                 <Td>
                                                     <Badge colorScheme={getStatusColor(appointment.status)}>
                                                         {appointment.status}
@@ -510,7 +510,7 @@ export default function AppointmentsPage() {
                                                     {appointment.patientId?.fullName || appointment.patient?.fullName || 'N/A'}
                                                 </Td>
                                                 <Td>{new Date(appointment.appointmentDate).toLocaleDateString()}</Td>
-                                                <Td>{appointment.appointmentTime}</Td>
+                                                <Td>{new Date(appointment.appointmentDateTime || appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Td>
                                                 <Td>
                                                     <Badge colorScheme={getStatusColor(appointment.status)}>
                                                         {appointment.status}

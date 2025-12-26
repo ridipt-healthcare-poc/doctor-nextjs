@@ -7,6 +7,7 @@ export interface Appointment {
     facility: string;
     appointmentDate: string;
     appointmentTime: string;
+    appointmentDateTime: string;
     status: string;
     reason?: string;
     notes?: string;
