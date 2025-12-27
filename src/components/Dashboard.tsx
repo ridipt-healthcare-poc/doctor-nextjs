@@ -49,6 +49,7 @@ const sidebarLinks = [
     { name: "Appointment", icon: FiCalendar, path: "/appointments" },
     { name: "Doctor", icon: FiUserPlus, path: "/referral-doctors" },
     { name: "Patients", icon: FiUsers, path: "/patients" },
+    { name: "Profile", icon: FiUser, path: "/profile" },
     { name: "Payment", icon: MdCurrencyRupee, path: "/payment" },
     { name: "Message", icon: FiBell, path: "/messages" },
     { name: "Settings", icon: FiSettings, path: "/setting" },
@@ -96,16 +97,13 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onClose }) => {
         >
             {/* Logo */}
             <Flex h="12" alignItems="center" justifyContent="space-between" mb="8">
-                <HStack spacing="2">
-                    <Box
-                        as="img"
-                        src="/l.jpg" 
-                        alt="Logo"
-                        w="540px"
-                        h="280px"
-                        objectFit="contain"
-                    />
-                </HStack>
+                <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color={useColorModeValue("blue.600", "blue.300")}
+                >
+                    Doctor Portal
+                </Text>
 
                 <CloseButton
                     display={{ base: "flex", md: "none" }}

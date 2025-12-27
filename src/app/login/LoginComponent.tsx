@@ -314,10 +314,10 @@ const Login = () => {
                 </Box>
                 <Box>
                   <Text fontWeight="bold" letterSpacing="wide">
-                    MedSparsh
+                    Doctor Portal
                   </Text>
                   <Text fontSize="xs" >
-                   Health Care Degitalized
+                    Health Care Digitalized
                   </Text>
                 </Box>
               </HStack>
@@ -455,21 +455,14 @@ const Login = () => {
               >
                 <FaUserMd size={24} />
               </Box> */}
-               <Box
-             
-             
-              h={{ base: "36px", md: "35px" }} // responsive height
-              display="flex"
-              alignItems="center"
-            >
-              <Image
-                src='/lbg.png'
-                alt="MedBook Logo"
-                 maxH="840%"
-                objectFit="contain"
-                cursor="pointer"
-              />
-            </Box>
+              <Text
+                fontSize={{ base: "2xl", md: "3xl" }}
+                fontWeight="bold"
+                bgGradient={PRIMARY_GRADIENT}
+                bgClip="text"
+              >
+                Doctor Portal
+              </Text>
             </HStack>
 
             <Box

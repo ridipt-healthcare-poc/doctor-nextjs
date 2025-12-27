@@ -62,12 +62,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const getDoctorProfile = async (): Promise<User> => {
     const res = await api.get('/api/doctor-auth/profile');
-    return res.data.doctor;
+    return res.data.data;
 };
 
 export const updateDoctorProfile = async (profileData: Partial<User>) => {
     const res = await api.put('/api/doctor-auth/profile', profileData);
-    return res.data;
+    return res.data.data;
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {

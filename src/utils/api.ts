@@ -59,3 +59,9 @@ api.interceptors.response.use(
 
 export default api;
 export { API_URL };
+
+// Doctor Profile API
+export const doctorProfileApi = {
+    getProfile: () => api.get('/api/doctor-auth/profile'),
+    updateProfile: (profileData: any) => api.put('/api/doctor-auth/profile', profileData),
+};
