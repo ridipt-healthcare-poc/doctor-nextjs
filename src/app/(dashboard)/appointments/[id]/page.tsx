@@ -29,30 +29,51 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
 } from '@chakra-ui/react';
-import { FiArrowLeft, FiEdit, FiTrash2, FiCalendar, FiClock, FiUser, FiPhone, FiFileText, FiMoreVertical } from 'react-icons/fi';
+import { FiArrowLeft, FiEdit, FiTrash2, FiCalendar, FiClock, FiUser, FiPhone, FiFileText, FiMoreVertical, FiPlus } from 'react-icons/fi';
 import { appointmentService } from '@/services/appointmentService';
 import { useRouter, useParams } from 'next/navigation';
+import PrescriptionFormChakra from '@/components/PrescriptionFormChakra';
+import PrescriptionUploadFormChakra from '@/components/PrescriptionUploadFormChakra';
+import PrescriptionPreviewChakra from '@/components/PrescriptionPreviewChakra';
+
 
 export default function AppointmentDetailPage() {
     const [appointment, setAppointment] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isPrescriptionModalOpen, onOpen: onPrescriptionModalOpen, onClose: onPrescriptionModalClose } = useDisclosure();
     const cancelRef = React.useRef<HTMLButtonElement>(null);
     const toast = useToast();
     const router = useRouter();
     const params = useParams();
     const appointmentId = params.id as string;
 
+    // Prescription state
+    const [prescriptionMode, setPrescriptionMode] = useState<'form' | 'upload'>('form');
+    const [prescription, setPrescription] = useState<any>(null);
+    const [loadingPrescription, setLoadingPrescription] = useState(false);
+
     const cardBg = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.600');
     const labelColor = useColorModeValue('gray.600', 'gray.400');
+
 
     useEffect(() => {
         if (appointmentId) {
             fetchAppointment();
         }
     }, [appointmentId]);
+
+    useEffect(() => {
+        if (appointment?.prescriptionId) {
+            fetchPrescription();
+        }
+    }, [appointment?.prescriptionId]);
 
     const fetchAppointment = async () => {
         try {
@@ -71,6 +92,32 @@ export default function AppointmentDetailPage() {
             setLoading(false);
         }
     };
+
+    const fetchPrescription = async () => {
+        if (!appointment?.prescriptionId) return;
+
+        setLoadingPrescription(true);
+        try {
+            const token = localStorage.getItem('doctorToken');
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${appointment.prescriptionId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            const data = await response.json();
+            if (data.success) {
+                setPrescription(data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching prescription:', error);
+        } finally {
+            setLoadingPrescription(false);
+        }
+    };
+
 
     const getStatusColor = (status: string) => {
         const statusColors: Record<string, string> = {
@@ -324,10 +371,182 @@ export default function AppointmentDetailPage() {
                         </CardBody>
                     </Card>
                 </GridItem>
-            </Grid>
+
+                {/* Prescription Section */}
+                {(appointment.status === 'Confirmed' || appointment.status === 'Completed') && (
+                    <GridItem colSpan={{ base: 1, lg: 2 }}>
+                        <Card bg={cardBg} borderRadius="xl" shadow="sm">
+                            <CardBody>
+                                <VStack align="stretch" spacing={4}>
+                                    <HStack justify="space-between">
+                                        <Heading size="md">Prescription</Heading>
+                                        {!prescription && !loadingPrescription && (
+                                            <Menu>
+                                                <MenuButton
+                                                    as={Button}
+                                                    colorScheme="blue"
+                                                    leftIcon={<FiPlus />}
+                                                >
+                                                    Create Prescription
+                                                </MenuButton>
+                                                <MenuList>
+                                                    <MenuItem onClick={() => {
+                                                        setPrescriptionMode('form');
+                                                        onPrescriptionModalOpen();
+                                                    }}>
+                                                        📝 Fill Form
+                                                    </MenuItem>
+                                                    <MenuItem onClick={() => {
+                                                        setPrescriptionMode('upload');
+                                                        onPrescriptionModalOpen();
+                                                    }}>
+                                                        📤 Upload File
+                                                    </MenuItem>
+                                                </MenuList>
+                                            </Menu>
+                                        )}
+                                    </HStack>
+                                    <Divider />
+
+                                    {loadingPrescription ? (
+                                        <Center py={8}>
+                                            <Spinner size="lg" color="blue.500" />
+                                        </Center>
+                                    ) : prescription ? (
+                                        <PrescriptionPreviewChakra
+                                            prescription={prescription}
+                                            onIssue={async () => {
+                                                try {
+                                                    const token = localStorage.getItem('doctorToken');
+                                                    const response = await fetch(
+                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${prescription._id}/issue`,
+                                                        {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                Authorization: `Bearer ${token}`
+                                                            }
+                                                        }
+                                                    );
+                                                    const data = await response.json();
+                                                    if (data.success) {
+                                                        toast({
+                                                            title: 'Prescription issued',
+                                                            description: 'Prescription has been issued to the patient',
+                                                            status: 'success',
+                                                            duration: 3000,
+                                                            isClosable: true,
+                                                        });
+                                                        fetchPrescription();
+                                                    }
+                                                } catch (error) {
+                                                    toast({
+                                                        title: 'Error',
+                                                        description: 'Failed to issue prescription',
+                                                        status: 'error',
+                                                        duration: 3000,
+                                                        isClosable: true,
+                                                    });
+                                                }
+                                            }}
+                                            onDelete={async () => {
+                                                if (!confirm('Are you sure you want to delete this prescription?')) {
+                                                    return;
+                                                }
+                                                try {
+                                                    const token = localStorage.getItem('doctorToken');
+                                                    const response = await fetch(
+                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${prescription._id}`,
+                                                        {
+                                                            method: 'DELETE',
+                                                            headers: {
+                                                                Authorization: `Bearer ${token}`,
+                                                                'Content-Type': 'application/json'
+                                                            },
+                                                            body: JSON.stringify({ reason: 'Deleted by doctor' })
+                                                        }
+                                                    );
+                                                    const data = await response.json();
+                                                    if (data.success) {
+                                                        toast({
+                                                            title: 'Prescription deleted',
+                                                            description: 'Prescription has been deleted successfully',
+                                                            status: 'success',
+                                                            duration: 3000,
+                                                            isClosable: true,
+                                                        });
+                                                        setPrescription(null);
+                                                        fetchAppointment();
+                                                    }
+                                                } catch (error) {
+                                                    toast({
+                                                        title: 'Error',
+                                                        description: 'Failed to delete prescription',
+                                                        status: 'error',
+                                                        duration: 3000,
+                                                        isClosable: true,
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        <Text color="gray.500" textAlign="center" py={8}>
+                                            No prescription created yet. Click "Create Prescription" to add one.
+                                        </Text>
+                                    )}
+                                </VStack>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                )
+                }
+            </Grid >
+
+            {/* Prescription Modal */}
+            < Modal isOpen={isPrescriptionModalOpen} onClose={onPrescriptionModalClose} size="4xl" >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalBody p={0}>
+                        {prescriptionMode === 'form' ? (
+                            <PrescriptionFormChakra
+                                appointmentId={appointmentId}
+                                patientName={appointment?.patientId?.fullName || appointment?.patient?.fullName || 'Patient'}
+                                onSuccess={() => {
+                                    onPrescriptionModalClose();
+                                    fetchAppointment();
+                                    toast({
+                                        title: 'Success',
+                                        description: 'Prescription created successfully',
+                                        status: 'success',
+                                        duration: 3000,
+                                        isClosable: true,
+                                    });
+                                }}
+                                onCancel={onPrescriptionModalClose}
+                            />
+                        ) : (
+                            <PrescriptionUploadFormChakra
+                                appointmentId={appointmentId}
+                                patientName={appointment?.patientId?.fullName || appointment?.patient?.fullName || 'Patient'}
+                                onSuccess={() => {
+                                    onPrescriptionModalClose();
+                                    fetchAppointment();
+                                    toast({
+                                        title: 'Success',
+                                        description: 'Prescription uploaded successfully',
+                                        status: 'success',
+                                        duration: 3000,
+                                        isClosable: true,
+                                    });
+                                }}
+                                onCancel={onPrescriptionModalClose}
+                            />
+                        )}
+                    </ModalBody>
+                </ModalContent>
+            </Modal >
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog
+            < AlertDialog
                 isOpen={isOpen}
                 leastDestructiveRef={cancelRef}
                 onClose={onClose}
@@ -352,7 +571,7 @@ export default function AppointmentDetailPage() {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialogOverlay>
-            </AlertDialog>
-        </Box>
+            </AlertDialog >
+        </Box >
     );
 }

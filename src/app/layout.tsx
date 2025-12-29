@@ -5,7 +5,11 @@ import { Provider } from "../components/providers";
 import { AuthProvider } from "../contexts/AuthContext";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  preload: false,
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   title: "Doctor Appointment App",

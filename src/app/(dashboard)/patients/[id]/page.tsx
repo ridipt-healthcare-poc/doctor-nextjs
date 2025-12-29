@@ -33,7 +33,7 @@ import {
     Td,
     SimpleGrid,
 } from '@chakra-ui/react';
-import { FiArrowLeft, FiEdit, FiTrash2, FiUser, FiPhone, FiMail, FiMapPin, FiHeart, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import { FiArrowLeft, FiEdit, FiTrash2, FiUser, FiPhone, FiMail, FiMapPin, FiHeart, FiCalendar, FiToggleLeft, FiToggleRight, FiFileText, FiDownload } from 'react-icons/fi';
 import { patientService } from '@/services/patientService';
 import { appointmentService } from '@/services/appointmentService';
 import { useRouter, useParams } from 'next/navigation';
@@ -41,7 +41,9 @@ import { useRouter, useParams } from 'next/navigation';
 export default function PatientDetailPage() {
     const [patient, setPatient] = useState<any>(null);
     const [appointments, setAppointments] = useState<any[]>([]);
+    const [reports, setReports] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [reportsLoading, setReportsLoading] = useState(true);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const cancelRef = React.useRef<HTMLButtonElement>(null);
     const toast = useToast();
@@ -58,6 +60,7 @@ export default function PatientDetailPage() {
         if (patientId) {
             fetchPatient();
             fetchPatientAppointments();
+            fetchPatientReports();
         }
     }, [patientId]);
 
@@ -85,6 +88,61 @@ export default function PatientDetailPage() {
             setAppointments(response.data || response.appointments || []);
         } catch (error: any) {
             console.error('Error fetching patient appointments:', error);
+        }
+    };
+
+    const fetchPatientReports = async () => {
+        try {
+            const token = localStorage.getItem('doctorToken');
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+
+            const response = await fetch(`${apiUrl}/doctors/patients/${patientId}/reports`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setReports(data.data || []);
+            }
+        } catch (error: any) {
+            console.error('Error fetching patient reports:', error);
+        } finally {
+            setReportsLoading(false);
+        }
+    };
+
+    const handleDownloadReport = async (reportId: string) => {
+        try {
+            const token = localStorage.getItem('doctorToken');
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+
+            const response = await fetch(`${apiUrl}/doctors/patients/${patientId}/reports/${reportId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                const fileUrl = data.data.fileUrl;
+
+                // Construct proper URL for local files
+                const downloadUrl = fileUrl.startsWith('http')
+                    ? fileUrl
+                    : `http://localhost:8080${fileUrl}`;
+
+                window.open(downloadUrl, '_blank');
+            }
+        } catch (error: any) {
+            toast({
+                title: 'Download Failed',
+                description: 'Failed to download report',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -377,6 +435,84 @@ export default function PatientDetailPage() {
                             </Box>
                         ) : (
                             <Text color="gray.500" fontStyle="italic">No appointments found for this patient</Text>
+                        )}
+                    </VStack>
+                </CardBody>
+            </Card>
+
+            {/* Medical Reports */}
+            <Card bg={cardBg} borderRadius="xl" shadow="sm" mt={6}>
+                <CardBody>
+                    <VStack align="stretch" spacing={4}>
+                        <HStack>
+                            <FiFileText color="gray" />
+                            <Heading size="md">Medical Reports</Heading>
+                            <Badge colorScheme="blue" ml={2}>{reports.length}</Badge>
+                        </HStack>
+                        <Divider />
+
+                        {reportsLoading ? (
+                            <Center py={8}>
+                                <Spinner size="lg" color="blue.500" />
+                            </Center>
+                        ) : reports.length > 0 ? (
+                            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+                                {reports.map((report: any) => (
+                                    <Card
+                                        key={report._id}
+                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        borderRadius="lg"
+                                        shadow="sm"
+                                        _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
+                                        transition="all 0.2s"
+                                    >
+                                        <CardBody>
+                                            <VStack align="stretch" spacing={3}>
+                                                <HStack justify="space-between">
+                                                    <FiFileText size={24} color="blue" />
+                                                    <Badge colorScheme="purple">{report.reportType}</Badge>
+                                                </HStack>
+
+                                                <Box>
+                                                    <Text fontWeight="bold" fontSize="sm" noOfLines={2}>
+                                                        {report.fileName}
+                                                    </Text>
+                                                    <Text fontSize="xs" color={labelColor} mt={1}>
+                                                        {new Date(report.reportDate).toLocaleDateString()}
+                                                    </Text>
+                                                    <Text fontSize="xs" color="gray.500">
+                                                        {(report.fileSize / 1024).toFixed(1)} KB
+                                                    </Text>
+                                                </Box>
+
+                                                {report.notes && (
+                                                    <Text fontSize="xs" color={labelColor} noOfLines={2}>
+                                                        {report.notes}
+                                                    </Text>
+                                                )}
+
+                                                <Button
+                                                    size="sm"
+                                                    colorScheme="blue"
+                                                    leftIcon={<FiDownload />}
+                                                    onClick={() => handleDownloadReport(report._id)}
+                                                >
+                                                    Download
+                                                </Button>
+
+                                                <Text fontSize="xs" color="gray.400">
+                                                    Uploaded: {new Date(report.uploadedAt).toLocaleDateString()}
+                                                </Text>
+                                            </VStack>
+                                        </CardBody>
+                                    </Card>
+                                ))}
+                            </SimpleGrid>
+                        ) : (
+                            <Box textAlign="center" py={8}>
+                                <FiFileText size={48} color="gray" style={{ margin: '0 auto 16px' }} />
+                                <Text color="gray.500" fontStyle="italic">No medical reports uploaded yet</Text>
+                            </Box>
                         )}
                     </VStack>
                 </CardBody>
