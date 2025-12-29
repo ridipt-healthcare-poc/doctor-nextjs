@@ -1,33 +1,27 @@
 'use client';
 
-import React from 'react';
-import {
-    Box,
-    Heading,
-    Text,
-    VStack,
-    useColorModeValue,
-} from '@chakra-ui/react';
+import { Box, Heading, Text, VStack, Container, Card, CardBody, Icon } from '@chakra-ui/react';
+import { FiSettings } from 'react-icons/fi';
 
 export default function SettingsPage() {
-    const cardBg = useColorModeValue('white', 'gray.800');
-
     return (
-        <Box>
-            <Heading size="lg" mb={6}>
-                Settings
-            </Heading>
+        <Container maxW="container.xl" py={8}>
+            <VStack spacing={6} align="stretch">
+                <Box>
+                    <Heading size="lg" mb={2}>Settings</Heading>
+                    <Text color="gray.600">Manage your portal preferences and professional profile</Text>
+                </Box>
 
-            <Box bg={cardBg} p={8} borderRadius="xl">
-                <VStack align="stretch" spacing={4}>
-                    <Text fontSize="lg" fontWeight="semibold">
-                        Application Settings
-                    </Text>
-                    <Text color="gray.600">
-                        Settings page is under development. More options will be available soon.
-                    </Text>
-                </VStack>
-            </Box>
-        </Box>
+                <Card>
+                    <CardBody py={10} textAlign="center">
+                        <Icon as={FiSettings} boxSize={12} color="blue.500" mb={4} />
+                        <Heading size="md" mb={2}>Settings Page Coming Soon</Heading>
+                        <Text color="gray.500">
+                            Professional settings, notification preferences, and schedule management are coming soon.
+                        </Text>
+                    </CardBody>
+                </Card>
+            </VStack>
+        </Container>
     );
 }
