@@ -131,7 +131,7 @@ export default function PatientDetailPage() {
                 // Construct proper URL for local files
                 const downloadUrl = fileUrl.startsWith('http')
                     ? fileUrl
-                    : `http://localhost:8080${fileUrl}`;
+                    : `${apiUrl.replace('/api', '')}${fileUrl}`;
 
                 window.open(downloadUrl, '_blank');
             }

@@ -52,7 +52,7 @@ const sidebarLinks = [
     { name: "Profile", icon: FiUser, path: "/profile" },
     { name: "Payment", icon: MdCurrencyRupee, path: "/payment" },
     { name: "Message", icon: FiBell, path: "/messages" },
-    { name: "Settings", icon: FiSettings, path: "/setting" },
+    { name: "Settings", icon: FiSettings, path: "/settings" },
 ];
 
 interface SidebarContentProps {
@@ -431,7 +431,7 @@ const AppBar: React.FC<AppBarProps> = ({ onOpen, user }) => {
                         <MenuItem as={Link} href="/profile" icon={<FiUser size={16} />} _hover={{ bg: menuHoverBg }}>
                             Profile
                         </MenuItem>
-                        <MenuItem as={Link} href="/setting" icon={<FiSettings size={16} />} _hover={{ bg: menuHoverBg }}>
+                        <MenuItem as={Link} href="/settings" icon={<FiSettings size={16} />} _hover={{ bg: menuHoverBg }}>
                             Settings
                         </MenuItem>
                         <MenuDivider />

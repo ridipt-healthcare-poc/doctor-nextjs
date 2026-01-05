@@ -242,8 +242,11 @@ export default function CreatePatientPage() {
                         id="dateOfBirth"
                         name="dateOfBirth"
                         type="date"
+                        placeholder="dd/mm/yyyy"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
+                        max={new Date().toISOString().split('T')[0]}
+                        min="1900-01-01"
                         bg={inputBg}
                         border="1px solid"
                         borderColor="gray.300"

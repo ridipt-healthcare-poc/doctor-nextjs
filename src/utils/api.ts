@@ -1,7 +1,12 @@
 import axios from 'axios';
 
 // Use environment variable or fallback to localhost
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const getBaseUrl = () => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    return baseUrl.endsWith('/api') ? baseUrl.slice(0, -4) : baseUrl;
+};
+
+const API_URL = getBaseUrl();
 
 // Create axios instance with default config
 const api = axios.create({

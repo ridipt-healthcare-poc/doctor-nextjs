@@ -66,6 +66,11 @@ const ambientBgImage =
 const heroImage =
   "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1200&q=80";
 
+const getBaseUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+};
+
 const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -145,10 +150,9 @@ const Login = () => {
     e.preventDefault();
     setResetLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/doctor/auth/forgot-password",
-        { email: forgotEmail }
-      );
+      const res = await axios.post(`${getBaseUrl()}/doctor/auth/forgot-password`, {
+        email: forgotEmail,
+      });
       toast({
         title: "Reset email sent",
         description: "Please check your email for the reset link/token.",
@@ -185,10 +189,9 @@ const Login = () => {
     }
     setResetLoading(true);
     try {
-      await axios.post(
-        `http://localhost:8080/api/doctor/auth/reset-password/${forgotToken}`,
-        { newPassword }
-      );
+      await axios.post(`${getBaseUrl()}/doctor/auth/reset-password/${forgotToken}`, {
+        newPassword,
+      });
       toast({
         title: "Password Reset Successful",
         description: "You may now log in with your new password.",
@@ -592,9 +595,11 @@ const Login = () => {
                               <Input
                                 name="dateOfBirth"
                                 type="date"
+                                placeholder="dd/mm/yyyy"
                                 value={signupData.dateOfBirth}
                                 onChange={handleChange}
                                 max={new Date().toISOString().split("T")[0]}
+                                min="1900-01-01"
                                 bg={inputBg}
                                 borderColor="rgba(14,165,233,0.25)"
                                 focusBorderColor={focusBorderColor}

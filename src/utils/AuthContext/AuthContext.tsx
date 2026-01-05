@@ -24,23 +24,22 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getBaseUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+};
+
 export const getDoctorProfile = async () => {
-  const res = await axios.get(
-    "http://localhost:8080/api/doctor-auth/profile"
-  );
+  const res = await axios.get(`${getBaseUrl()}/doctor-auth/profile`);
   return res.data.doctor;
 };
 
 // New API: Update doctor profile
 export const updateDoctorProfile = async (profileData: any) => {
-  const res = await axios.put(
-    "http://localhost:8080/api/doctors/my-profile",
-    profileData,
-    {
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-  return res.data.data; // Return the data property which contains the updated doctor
+  const res = await axios.put(`${getBaseUrl()}/doctors/my-profile`, profileData, {
+    headers: { "Content-Type": "application/json" },
+  });
+  return res.data.data;
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -60,14 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/doctor/auth/register",
-        signupPayload,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post(`${getBaseUrl()}/doctor/auth/register`, signupPayload, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
       setLoading(false);
       return res.data;
     } catch (err: any) {
@@ -81,14 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/doctor-auth/login",
-        loginData,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post(`${getBaseUrl()}/doctor-auth/login`, loginData, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
       setLoading(false);
 
       // Store token
@@ -139,11 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     setError(null);
     try {
-      await axios.post(
-        "http://localhost:8080/api/doctor/auth/logout",
-        {},
-        { withCredentials: true }
-      );
+      await axios.post(`${getBaseUrl()}/doctor/auth/logout`, {}, { withCredentials: true });
       setUser(null);
       localStorage.removeItem('doctor_token');
       delete axios.defaults.headers.common['Authorization'];
