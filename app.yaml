@@ -1,0 +1,11 @@
+runtime: nodejs20
+env: flex
+service: doctor
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 3
+
+env_variables:
+  NODE_ENV: production
+  NEXT_PUBLIC_API_URL: "https://backend.medsparsh.com"
