@@ -52,7 +52,7 @@ export default function PrescriptionPreview({
             onDownload();
         } else {
             // Default download behavior
-            const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}${prescription.fileUrl}`;
+            const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}${prescription.fileUrl}`;
             window.open(downloadUrl, '_blank');
         }
     };

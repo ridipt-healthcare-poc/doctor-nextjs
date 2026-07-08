@@ -100,7 +100,7 @@ export default function AppointmentDetailPage() {
         try {
             const token = localStorage.getItem('doctorToken');
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${appointment.prescriptionId}`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${appointment.prescriptionId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -419,7 +419,7 @@ export default function AppointmentDetailPage() {
                                                 try {
                                                     const token = localStorage.getItem('doctorToken');
                                                     const response = await fetch(
-                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${prescription._id}/issue`,
+                                                        `${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${prescription._id}/issue`,
                                                         {
                                                             method: 'POST',
                                                             headers: {
@@ -455,7 +455,7 @@ export default function AppointmentDetailPage() {
                                                 try {
                                                     const token = localStorage.getItem('doctorToken');
                                                     const response = await fetch(
-                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${prescription._id}`,
+                                                        `${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${prescription._id}`,
                                                         {
                                                             method: 'DELETE',
                                                             headers: {

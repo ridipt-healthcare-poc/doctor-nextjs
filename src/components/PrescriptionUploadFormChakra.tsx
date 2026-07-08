@@ -104,7 +104,7 @@ export default function PrescriptionUploadFormChakra({
             formData.append('appointmentId', appointmentId);
             formData.append('notes', notes);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/upload`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/upload`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -116,7 +116,7 @@ export default function PrescriptionUploadFormChakra({
 
             if (data.success) {
                 if (!saveAsDraft) {
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${data.data._id}/issue`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${data.data._id}/issue`, {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${token}`
