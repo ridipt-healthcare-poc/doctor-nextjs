@@ -94,7 +94,7 @@ export default function PatientDetailPage() {
     const fetchPatientReports = async () => {
         try {
             const token = localStorage.getItem('doctorToken');
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com';
             const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
 
             const response = await fetch(`${apiUrl}/doctors/patients/${patientId}/reports`, {
@@ -116,7 +116,7 @@ export default function PatientDetailPage() {
     const handleDownloadReport = async (reportId: string) => {
         try {
             const token = localStorage.getItem('doctorToken');
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com';
             const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
 
             const response = await fetch(`${apiUrl}/doctors/patients/${patientId}/reports/${reportId}`, {

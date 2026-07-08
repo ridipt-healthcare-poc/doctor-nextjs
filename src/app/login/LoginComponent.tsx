@@ -67,7 +67,7 @@ const heroImage =
   "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1200&q=80";
 
 const getBaseUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com';
   return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
 };
 

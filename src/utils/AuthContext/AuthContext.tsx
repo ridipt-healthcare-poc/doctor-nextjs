@@ -25,7 +25,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const getBaseUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com';
   return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
 };
 

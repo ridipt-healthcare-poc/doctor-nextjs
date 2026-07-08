@@ -77,7 +77,7 @@ export default function PrescriptionForm({
             const validMedications = medications.filter(med => med.name.trim() !== '');
             const validLabTests = labTests.filter(test => test.trim() !== '');
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/generate`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function PrescriptionForm({
             if (data.success) {
                 // If not saving as draft, issue immediately
                 if (!saveAsDraft) {
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${data.data._id}/issue`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${data.data._id}/issue`, {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${token}`

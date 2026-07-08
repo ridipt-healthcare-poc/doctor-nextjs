@@ -58,7 +58,7 @@ export default function PrescriptionPreviewChakra({
 
         const fileUrl = prescription.fileUrl.startsWith('http')
             ? prescription.fileUrl
-            : `${process.env.NEXT_PUBLIC_API_URL}${prescription.fileUrl}`;
+            : `${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}${prescription.fileUrl}`;
 
         window.open(fileUrl, '_blank');
     };

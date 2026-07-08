@@ -71,7 +71,7 @@ export default function PrescriptionUploadForm({
             formData.append('appointmentId', appointmentId);
             formData.append('notes', notes);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/upload`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/upload`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -84,7 +84,7 @@ export default function PrescriptionUploadForm({
             if (data.success) {
                 // If not saving as draft, issue immediately
                 if (!saveAsDraft) {
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prescriptions/${data.data._id}/issue`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.medsparsh.com'}/api/prescriptions/${data.data._id}/issue`, {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${token}`
