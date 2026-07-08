@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Box,
     VStack,
@@ -30,13 +30,14 @@ import {
     WrapItem,
     Divider,
 } from '@chakra-ui/react';
-import { FiEdit2, FiSave, FiX, FiUser, FiBriefcase, FiDollarSign, FiClock, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
+import { FiEdit2, FiSave, FiX, FiUser, FiBriefcase, FiDollarSign, FiClock, FiMapPin, FiPhone, FiMail, FiCamera } from 'react-icons/fi';
 import { doctorProfileApi } from '@/utils/api';
 
 interface DoctorProfile {
     _id: string;
     name: string;
     email: string;
+    profilePhoto?: string;
     phone: string;
     mobile?: string;
     gender?: string;
@@ -84,6 +85,8 @@ export default function DoctorProfilePage() {
     const [formData, setFormData] = useState<Partial<DoctorProfile>>({});
     const [newLanguage, setNewLanguage] = useState('');
     const [newQualification, setNewQualification] = useState('');
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const toast = useToast();
 
     // Color mode values
@@ -142,6 +145,36 @@ export default function DoctorProfilePage() {
             });
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingPhoto(true);
+        try {
+            const response = await doctorProfileApi.uploadProfileImage(file);
+            const newPhotoUrl = response.data.data.profilePhoto;
+            setProfile((prev) => prev ? { ...prev, profilePhoto: newPhotoUrl } : prev);
+            setFormData((prev) => ({ ...prev, profilePhoto: newPhotoUrl }));
+            toast({
+                title: 'Profile photo updated',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+        } catch (error: any) {
+            toast({
+                title: 'Error uploading photo',
+                description: error.response?.data?.message || 'Failed to upload profile photo',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+        } finally {
+            setUploadingPhoto(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
@@ -238,13 +271,35 @@ export default function DoctorProfilePage() {
                     />
 
                     <HStack spacing={6} align="flex-start">
-                        <Avatar
-                            size="2xl"
-                            name={isEditing ? formData.name : profile.name}
-                            bg="blue.500"
-                            color="white"
-                            fontSize="3xl"
-                        />
+                        <Box position="relative">
+                            <Avatar
+                                size="2xl"
+                                name={isEditing ? formData.name : profile.name}
+                                src={profile.profilePhoto}
+                                bg="blue.500"
+                                color="white"
+                                fontSize="3xl"
+                            />
+                            <IconButton
+                                aria-label="Change profile photo"
+                                icon={<FiCamera />}
+                                size="sm"
+                                colorScheme="blue"
+                                borderRadius="full"
+                                position="absolute"
+                                bottom={0}
+                                right={0}
+                                isLoading={uploadingPhoto}
+                                onClick={() => fileInputRef.current?.click()}
+                            />
+                            <Input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                display="none"
+                                onChange={handlePhotoSelect}
+                            />
+                        </Box>
 
                         <VStack align="flex-start" spacing={3} flex={1}>
                             {isEditing ? (

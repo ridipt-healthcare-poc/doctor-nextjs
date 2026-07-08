@@ -69,4 +69,11 @@ export { API_URL };
 export const doctorProfileApi = {
     getProfile: () => api.get('/api/doctor-auth/profile'),
     updateProfile: (profileData: any) => api.put('/api/doctor-auth/profile', profileData),
+    uploadProfileImage: (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        return api.post('/api/doctor-auth/profile-image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
 };
